@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="actionbars.lua"/>
+	<Script file="backpack.lua"/>
+	<Script file="characterframe.lua"/>
+	<Script file="gamemenu.lua"/>
+	<Script file="inspectframe.lua"/>
+	<Script file="journeyframe.lua"/>
+	<Script file="lootframe.lua"/>
+	<Script file="mail.lua"/>
+	<Script file="micromenu.lua"/>
+	<Script file="suggestframe.lua"/>
+</Ui>

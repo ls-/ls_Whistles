@@ -1,0 +1,5 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="button.lua"/>
+	<Script file="gemdisplay.lua"/>
+	<Script file="fader.lua"/>
+</Ui>

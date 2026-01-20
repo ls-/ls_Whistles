@@ -1,0 +1,412 @@
+local _, addon = ...
+local C, D, L = addon.C, addon.D, addon.L
+addon.CharacterFrame = {}
+
+-- Lua
+local _G = getfenv(0)
+local hooksecurefunc = _G.hooksecurefunc
+local m_floor = _G.math.floor
+local next = _G.next
+local s_upper = _G.string.upper
+
+-- Mine
+local EQUIP_SLOTS = {
+	[CharacterBackSlot] = true,
+	[CharacterChestSlot] = true,
+	[CharacterFeetSlot] = true,
+	[CharacterFinger0Slot] = true,
+	[CharacterFinger1Slot] = true,
+	[CharacterHandsSlot] = true,
+	[CharacterHeadSlot] = true,
+	[CharacterLegsSlot] = true,
+	[CharacterMainHandSlot] = true,
+	[CharacterNeckSlot] = true,
+	[CharacterSecondaryHandSlot] = true,
+	[CharacterShirtSlot] = true,
+	[CharacterShoulderSlot] = true,
+	[CharacterTabardSlot] = true,
+	[CharacterTrinket0Slot] = true,
+	[CharacterTrinket1Slot] = true,
+	[CharacterWaistSlot] = true,
+	[CharacterWristSlot] = true,
+}
+
+local ENCHANT_SLOTS = {
+	[CharacterBackSlot] = false,
+	[CharacterChestSlot] = false,
+	[CharacterFeetSlot] = false,
+	[CharacterFinger0Slot] = false,
+	[CharacterFinger1Slot] = false,
+	[CharacterHandsSlot] = false,
+	[CharacterHeadSlot] = false,
+	[CharacterLegsSlot] = false,
+	[CharacterMainHandSlot] = false,
+	[CharacterNeckSlot] = false,
+	[CharacterSecondaryHandSlot] = false,
+	[CharacterShoulderSlot] = false,
+	[CharacterTrinket0Slot] = false,
+	[CharacterTrinket1Slot] = false,
+	[CharacterWaistSlot] = false,
+	[CharacterWristSlot] = false,
+}
+
+local avgItemLevel
+
+local function scanSlot(slotID)
+	local link = GetInventoryItemLink("player", slotID)
+	if link then
+		return true, addon:GetDetailedItemInfo(link)
+	elseif GetInventoryItemTexture("player", slotID) then
+		-- if there's no link, but there's a texture, it means that there's an item we have no info for
+		return false
+	end
+
+	return true
+end
+
+local function updateSlot(button)
+	if not EQUIP_SLOTS[button] then return end
+
+	if not (C.db.profile.character_frame.ilvl or C.db.profile.character_frame.enhancements or C.db.profile.character_frame.upgrade) then
+		button.ItemLevelText:SetText("")
+		button.EnchantText:SetText("")
+		button.EnchantIcon:Hide()
+		button.NoEnchantIcon:Hide()
+		button.UpgradeText:SetText("")
+		button.GemDisplay:SetGems()
+
+		return
+	end
+
+	local isOk, iLvl, upgrade, enchant, gem1, gem2, gem3 = scanSlot(button:GetID())
+	if isOk then
+		if C.db.profile.character_frame.ilvl then
+			button.ItemLevelText:SetText(iLvl or "")
+			button.ItemLevelText:SetTextColor(addon:GetItemLevelColor(iLvl, avgItemLevel))
+		else
+			button.ItemLevelText:SetText("")
+		end
+
+		if C.db.profile.character_frame.enhancements then
+			button.EnchantText:SetText(enchant or "")
+			button.EnchantIcon:SetShown(enchant)
+			button.NoEnchantIcon:SetShown(not enchant and ENCHANT_SLOTS[button])
+
+			if PlayerIsTimerunning() then
+				button.GemDisplay:SetGems()
+			else
+				button.GemDisplay:SetGems(gem1, gem2, gem3)
+			end
+		else
+			button.EnchantText:SetText("")
+			button.EnchantIcon:Hide()
+			button.NoEnchantIcon:Hide()
+			button.GemDisplay:SetGems()
+		end
+
+		if C.db.profile.character_frame.upgrade then
+			button.UpgradeText:SetText(upgrade or "")
+		else
+			button.UpgradeText:SetText("")
+		end
+	else
+		C_Timer.After(0.33, function() updateSlot(button) end)
+	end
+end
+
+local isInit = false
+
+function addon.CharacterFrame:IsInit()
+	return isInit
+end
+
+function addon.CharacterFrame:Init()
+	if isInit then return end
+	if not C.db.profile.character_frame.enabled then return end
+
+	if CharacterFrame:IsShown() then
+		HideUIPanel(CharacterFrame)
+	end
+
+	avgItemLevel = m_floor(GetAverageItemLevel())
+
+	ENCHANT_SLOTS[CharacterBackSlot] = C.db.profile.character_frame.missing_enhancements.back
+	ENCHANT_SLOTS[CharacterChestSlot] = C.db.profile.character_frame.missing_enhancements.chest
+	ENCHANT_SLOTS[CharacterFeetSlot] = C.db.profile.character_frame.missing_enhancements.feet
+	ENCHANT_SLOTS[CharacterFinger0Slot] = C.db.profile.character_frame.missing_enhancements.finger
+	ENCHANT_SLOTS[CharacterFinger1Slot] = C.db.profile.character_frame.missing_enhancements.finger
+	ENCHANT_SLOTS[CharacterHandsSlot] = C.db.profile.character_frame.missing_enhancements.hands
+	ENCHANT_SLOTS[CharacterHeadSlot] = C.db.profile.character_frame.missing_enhancements.head
+	ENCHANT_SLOTS[CharacterLegsSlot] = C.db.profile.character_frame.missing_enhancements.legs
+	ENCHANT_SLOTS[CharacterMainHandSlot] = C.db.profile.character_frame.missing_enhancements.main_hand
+	ENCHANT_SLOTS[CharacterNeckSlot] = C.db.profile.character_frame.missing_enhancements.neck
+	ENCHANT_SLOTS[CharacterSecondaryHandSlot] = C.db.profile.character_frame.missing_enhancements.secondary_hand
+	ENCHANT_SLOTS[CharacterShoulderSlot] = C.db.profile.character_frame.missing_enhancements.shoulder
+	ENCHANT_SLOTS[CharacterTrinket0Slot] = C.db.profile.character_frame.missing_enhancements.trinket
+	ENCHANT_SLOTS[CharacterTrinket1Slot] = C.db.profile.character_frame.missing_enhancements.trinket
+	ENCHANT_SLOTS[CharacterWaistSlot] = C.db.profile.character_frame.missing_enhancements.waist
+	ENCHANT_SLOTS[CharacterWristSlot] = C.db.profile.character_frame.missing_enhancements.wrist
+
+	local SLOT_TEXTURES_TO_REMOVE = {
+		["410248"] = true,
+		["INTERFACE\\CHARACTERFRAME\\CHAR-PAPERDOLL-PARTS"] = true,
+		["130841"] = true,
+		["INTERFACE\\BUTTONS\\UI-QUICKSLOT2"] = true,
+	}
+
+	for slot, textOnRight in next, {
+		[CharacterBackSlot] = true,
+		[CharacterChestSlot] = true,
+		[CharacterFeetSlot] = false,
+		[CharacterFinger0Slot] = false,
+		[CharacterFinger1Slot] = false,
+		[CharacterHandsSlot] = false,
+		[CharacterHeadSlot] = true,
+		[CharacterLegsSlot] = false,
+		[CharacterMainHandSlot] = false,
+		[CharacterNeckSlot] = true,
+		[CharacterSecondaryHandSlot] = true,
+		[CharacterShirtSlot] = true,
+		[CharacterShoulderSlot] = true,
+		[CharacterTabardSlot] = true,
+		[CharacterTrinket0Slot] = false,
+		[CharacterTrinket1Slot] = false,
+		[CharacterWaistSlot] = false,
+		[CharacterWristSlot] = true,
+	} do
+		for _, v in next, {slot:GetRegions()} do
+			if v:IsObjectType("Texture") and SLOT_TEXTURES_TO_REMOVE[s_upper(v:GetTexture() or "")] then
+				v:SetTexture(0)
+				v:Hide()
+			end
+		end
+
+		addon.Button:SkinItemSlotButton(slot)
+		slot:SetSize(36, 36)
+
+		local enchText = slot:CreateFontString(nil, "ARTWORK")
+		enchText:SetFontObject("GameFontNormalSmall")
+		enchText:SetSize(160, 22)
+		enchText:SetJustifyH(textOnRight and "LEFT" or "RIGHT")
+		enchText:SetJustifyV("TOP")
+		enchText:SetTextColor(0, 1, 0)
+		enchText:Hide()
+		slot.EnchantText = enchText
+
+		local enchIcon = slot:CreateTexture(nil, "OVERLAY", nil, 2)
+		enchIcon:SetSize(12, 12)
+		enchIcon:SetTexture("Interface\\ContainerFrame\\CosmeticIconBorder")
+		enchIcon:SetSnapToPixelGrid(false)
+		enchIcon:SetTexelSnappingBias(0)
+		enchIcon:SetDesaturated(true)
+		enchIcon:SetVertexColor(0, 0.95, 0, 0.85)
+		enchIcon:Hide()
+		slot.EnchantIcon = enchIcon
+
+		local noEnchIcon = slot:CreateTexture(nil, "OVERLAY", nil, 2)
+		noEnchIcon:SetSize(12, 12)
+		noEnchIcon:SetTexture("Interface\\ContainerFrame\\CosmeticIconBorder")
+		noEnchIcon:SetSnapToPixelGrid(false)
+		noEnchIcon:SetTexelSnappingBias(0)
+		noEnchIcon:SetDesaturated(true)
+		noEnchIcon:SetVertexColor(0.95, 0, 0, 0.85)
+		noEnchIcon:Hide()
+		slot.NoEnchantIcon = noEnchIcon
+
+		local upgradeText = slot:CreateFontString(nil, "ARTWORK")
+		upgradeText:SetFontObject("GameFontHighlightSmall")
+		upgradeText:SetSize(160, 0)
+		upgradeText:SetJustifyH(textOnRight and "LEFT" or "RIGHT")
+		upgradeText:Hide()
+		slot.UpgradeText = upgradeText
+
+		local iLvlText = slot:CreateFontString(nil, "OVERLAY")
+		iLvlText:SetFontObject("GameFontHighlightOutline")
+		iLvlText:SetJustifyV("BOTTOM")
+		iLvlText:SetJustifyH(textOnRight and "LEFT" or "RIGHT")
+		iLvlText:SetPoint("TOPLEFT", -1, -1)
+		iLvlText:SetPoint("BOTTOMRIGHT", 2, 1)
+		slot.ItemLevelText = iLvlText
+
+		if textOnRight then
+			enchText:SetPoint("TOPLEFT", slot, "TOPRIGHT", 6, 0)
+			enchIcon:SetPoint("TOPLEFT", -2, 2)
+			enchIcon:SetTexCoord(66 / 128, 42 / 128, 0 / 128, 24 / 128)
+			noEnchIcon:SetPoint("TOPRIGHT", 2, 2)
+			noEnchIcon:SetTexCoord(42 / 128, 66 / 128, 0 / 128, 24 / 128)
+			upgradeText:SetPoint("BOTTOMLEFT", slot, "BOTTOMRIGHT", 6, 0)
+		else
+			enchText:SetPoint("TOPRIGHT", slot, "TOPLEFT", -6, 0)
+			enchIcon:SetPoint("TOPRIGHT", 2, 2)
+			enchIcon:SetTexCoord(42 / 128, 66 / 128, 0 / 128, 24 / 128)
+			noEnchIcon:SetPoint("TOPLEFT", -2, 2)
+			noEnchIcon:SetTexCoord(66 / 128, 42 / 128, 0 / 128, 24 / 128)
+			upgradeText:SetPoint("BOTTOMRIGHT", slot, "BOTTOMLEFT", -6, 0)
+		end
+
+		local isWeaponSlot = slot == CharacterMainHandSlot or slot == CharacterSecondaryHandSlot
+
+		-- I could reuse .SocketDisplay, but my gut is telling me not to do it
+		slot.GemDisplay = addon.GemDisplay:Create(slot, isWeaponSlot)
+
+		if isWeaponSlot then
+			slot.GemDisplay:SetPoint("TOP", 0, 7)
+		elseif textOnRight then
+			slot.GemDisplay:SetPoint("RIGHT", 7, 0)
+		else
+			slot.GemDisplay:SetPoint("LEFT", -7, 0)
+		end
+	end
+
+	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
+	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
+	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+	CharacterSecondaryHandSlot:ClearAllPoints()
+	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
+
+	CharacterModelScene:SetSize(300, 360) -- needed for OrbitCameraMixin
+	CharacterModelScene:ClearAllPoints()
+	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 64, -3)
+	-- CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -64, 4)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 2, -2)
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -2, 2)
+
+	for _, texture in next, {
+		CharacterModelScene.BackgroundBotLeft,
+		CharacterModelScene.BackgroundBotRight,
+		CharacterModelScene.BackgroundOverlay,
+		CharacterModelScene.BackgroundTopLeft,
+		CharacterModelScene.BackgroundTopRight,
+		CharacterStatsPane.ClassBackground,
+		PaperDollInnerBorderBottom,
+		PaperDollInnerBorderBottom2,
+		PaperDollInnerBorderBottomLeft,
+		PaperDollInnerBorderBottomRight,
+		PaperDollInnerBorderLeft,
+		PaperDollInnerBorderRight,
+		PaperDollInnerBorderTop,
+		PaperDollInnerBorderTopLeft,
+		PaperDollInnerBorderTopRight,
+	} do
+		texture:SetTexture(0)
+		texture:Hide()
+	end
+
+	PaperDollFrame.TitleManagerPane:SetSize(0, 0)
+	PaperDollFrame.TitleManagerPane:SetPoint("TOPLEFT", CharacterFrame.InsetRight, "TOPLEFT", 3, -2)
+	PaperDollFrame.TitleManagerPane:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -21, 4)
+
+	PaperDollFrame.TitleManagerPane.ScrollBox:SetSize(0, 0)
+	PaperDollFrame.TitleManagerPane.ScrollBox:SetPoint("TOPLEFT", CharacterFrame.InsetRight, "TOPLEFT", 3, -4)
+	PaperDollFrame.TitleManagerPane.ScrollBox:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -26, 4)
+
+	PaperDollFrame.TitleManagerPane.ScrollBar:ClearAllPoints()
+	PaperDollFrame.TitleManagerPane.ScrollBar:SetPoint("TOPRIGHT", CharacterFrame.InsetRight, "TOPRIGHT", -10, -8)
+	PaperDollFrame.TitleManagerPane.ScrollBar:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -10, 6)
+
+	hooksecurefunc("PaperDollTitlesPane_InitButton", function(button)
+		button.BgTop:Hide()
+		button.BgMiddle:Hide()
+		button.BgBottom:Hide()
+	end)
+
+	PaperDollFrame.EquipmentManagerPane.EquipSet:SetPoint("TOPLEFT", 2, -2)
+
+	PaperDollFrame.EquipmentManagerPane:SetSize(0, 0)
+	PaperDollFrame.EquipmentManagerPane:SetPoint("TOPLEFT", CharacterFrame.InsetRight, "TOPLEFT", 3, -2)
+	PaperDollFrame.EquipmentManagerPane:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -21, 4)
+
+	PaperDollFrame.EquipmentManagerPane.ScrollBox:SetSize(0, 0)
+	PaperDollFrame.EquipmentManagerPane.ScrollBox:SetPoint("TOPLEFT", CharacterFrame.InsetRight, "TOPLEFT", 3, -28)
+	PaperDollFrame.EquipmentManagerPane.ScrollBox:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -26, 4)
+
+	PaperDollFrame.EquipmentManagerPane.ScrollBar:ClearAllPoints()
+	PaperDollFrame.EquipmentManagerPane.ScrollBar:SetPoint("TOPRIGHT", CharacterFrame.InsetRight, "TOPRIGHT", -10, -8)
+	PaperDollFrame.EquipmentManagerPane.ScrollBar:SetPoint("BOTTOMRIGHT", CharacterFrame.InsetRight, "BOTTOMRIGHT", -10, 6)
+
+	hooksecurefunc("PaperDollEquipmentManagerPane_InitButton", function(button)
+		button.BgTop:Hide()
+		button.BgMiddle:Hide()
+		button.BgBottom:Hide()
+	end)
+
+	hooksecurefunc(CharacterFrame, "UpdateSize", function()
+		if CharacterFrame.activeSubframe == "PaperDollFrame" then
+			CharacterFrame:SetSize(640, 431) -- 540 + 100, 424 + 7
+			CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
+
+			CharacterFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. addon.PLAYER_CLASS)
+			CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+			CharacterFrame.Inset.Bg:SetHorizTile(false)
+			CharacterFrame.Inset.Bg:SetVertTile(false)
+
+			CharacterFrame.Background:Hide()
+		else
+			CharacterFrame.Background:Show()
+		end
+	end)
+
+	local isMouseOver
+	CharacterFrame:HookScript("OnUpdate", function()
+		local state = CharacterFrame:IsMouseOver()
+		if state ~= isMouseOver then
+			for button in next, EQUIP_SLOTS do
+				button.EnchantText:SetShown(state)
+				button.UpgradeText:SetShown(state)
+			end
+
+			isMouseOver = state
+		end
+	end)
+
+	hooksecurefunc("PaperDollItemSlotButton_Update", updateSlot)
+
+	addon:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE", function()
+		avgItemLevel = m_floor(GetAverageItemLevel())
+	end)
+
+	isInit = true
+end
+
+function addon.CharacterFrame:Update()
+	if not isInit then return end
+
+	ENCHANT_SLOTS[CharacterBackSlot] = C.db.profile.character_frame.missing_enhancements.back
+	ENCHANT_SLOTS[CharacterChestSlot] = C.db.profile.character_frame.missing_enhancements.chest
+	ENCHANT_SLOTS[CharacterFeetSlot] = C.db.profile.character_frame.missing_enhancements.feet
+	ENCHANT_SLOTS[CharacterFinger0Slot] = C.db.profile.character_frame.missing_enhancements.finger
+	ENCHANT_SLOTS[CharacterFinger1Slot] = C.db.profile.character_frame.missing_enhancements.finger
+	ENCHANT_SLOTS[CharacterHandsSlot] = C.db.profile.character_frame.missing_enhancements.hands
+	ENCHANT_SLOTS[CharacterHeadSlot] = C.db.profile.character_frame.missing_enhancements.head
+	ENCHANT_SLOTS[CharacterLegsSlot] = C.db.profile.character_frame.missing_enhancements.legs
+	ENCHANT_SLOTS[CharacterMainHandSlot] = C.db.profile.character_frame.missing_enhancements.main_hand
+	ENCHANT_SLOTS[CharacterNeckSlot] = C.db.profile.character_frame.missing_enhancements.neck
+	ENCHANT_SLOTS[CharacterSecondaryHandSlot] = C.db.profile.character_frame.missing_enhancements.secondary_hand
+	ENCHANT_SLOTS[CharacterShoulderSlot] = C.db.profile.character_frame.missing_enhancements.shoulder
+	ENCHANT_SLOTS[CharacterTrinket0Slot] = C.db.profile.character_frame.missing_enhancements.trinket
+	ENCHANT_SLOTS[CharacterTrinket1Slot] = C.db.profile.character_frame.missing_enhancements.trinket
+	ENCHANT_SLOTS[CharacterWaistSlot] = C.db.profile.character_frame.missing_enhancements.waist
+	ENCHANT_SLOTS[CharacterWristSlot] = C.db.profile.character_frame.missing_enhancements.wrist
+
+	for button in next, EQUIP_SLOTS do
+		updateSlot(button)
+	end
+end

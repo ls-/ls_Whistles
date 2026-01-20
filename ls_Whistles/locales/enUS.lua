@@ -1,0 +1,67 @@
+﻿local _, addon = ...
+local C, D, L = addon.C, addon.D, addon.L
+
+-- Lua
+local _G = getfenv(0)
+
+-- Mine
+L["LS_WHISTLES"] = ("LS: |c%sWhistles|r"):format(D.global.colors.addon:GetHex())
+L["CURSEFORGE"] = "CurseForge"
+L["DISCORD"] = "Discord"
+L["GITHUB"] = "GitHub"
+L["WAGO"] = "Wago"
+L["WOWINTERFACE"] = "WoWInterface"
+L["INFO"] = D.global.colors.addon:WrapTextInColorCode(_G.INFO)
+L["AC_TOOLTIP"] = ("|c%1$sClick:|r %2$s\n|c%1$sShift Click:|r %3$s"):format(D.global.colors.addon:GetHex(), _G.GAMEMENU_OPTIONS, _G.ADVANCED_OPTIONS)
+
+-- Require translation
+L["ACTIONBARS_DESC"] = "Adds bar fading and button text options for each individual action bar in Edit Mode."
+L["AJ_TAB_DESC"] = "Makes the tab more information dense."
+L["BACKPACK_DESC"] = "Adds tracked currencies, gold, and the current token price to the tooltip."
+L["BONUS_XP_TOOLTIP"] = "Bonus XP: |cffffffff%s|r"
+L["CAST_VFX"] = "Casting Visual Effects"
+L["CHANGELOG"] = "Changelog"
+L["CHANGELOG_FULL"] = "Full"
+L["CHARACTER_BUTTON_DESC"] = "Adds item durability information."
+L["CHARACTER_FRAME"] = "Character Frame"
+L["CLEAN_UP"] = "Clean Up"
+L["CLEAN_UP_MAIL_DESC"] = "Removes all empty messages."
+L["COLLAPSE_OPTIONS"] = "Collapse Options"
+L["DAILY_QUEST_RESET_TIME_TOOLTIP"] = "Daily Quest Reset Time: |cffffffff%s|r"
+L["DESATURATION"] = "Desaturation"
+L["DOWNLOADS"] = "Downloads"
+L["EJ_BUTTON_DESC"] = "Adds raid and dungeon lockout information."
+L["FADING"] = "Fading"
+L["FADING_COMBAT_DESC"] = "Fade in on entering combat."
+L["FADING_TARGET_DESC"] = "Fade in on acquiring target."
+L["FONT"] = "Font"
+L["GRYPHON"] = "Gryphon"
+L["INSPECT_FRAME"] = "Inspect Frame"
+L["JOURNEYS_TOOLTIP_WATCH_JOURNEY"] = "<Shift Click to Show as Experience Bar>"
+L["LATENCY"] = "Latency"
+L["LATENCY_HOME"] = "Home"
+L["LATENCY_WORLD"] = "World"
+L["LEFT_ENDCAP"] = "Left"
+L["LEVEL_TOOLTIP"] = "Level: |cffffffff%d|r"
+L["LFD_BUTTON_DESC"] = "Adds \"Call to Arms\" information."
+L["LINK_COPY_SUCCESS"] = "Link Copied to Clipboard"
+L["LOOT_ALL"] = "Take Everything"
+L["LOOT_DESC"] = "Makes the loot window significantly more compact and adds a button to loot everything."
+L["MAIL_DESC"] = "Adds a button to remove all empty messages."
+L["MAINMENU_BUTTON_DESC"] = "Add addon performance information."
+L["MAINMENU_BUTTON_HOLD_TOOLTIP"] = "|cffffffffHold Shift|r to show performance information."
+L["MIN_ALPHA"] = "Min Alpha"
+L["MISSING_ENCHANTS"] = "Missing Enhancements"
+L["NUMBERS"] = "Numbers"
+L["NUMBERS_PERCENTAGE"] = "Numbers & Percentage"
+L["OUT_OF_MANA"] = "Out of Mana"
+L["OUTLINE"] = "Outline"
+L["QUESTLOG_BUTTON_DESC"] = "Adds daily quest reset time."
+L["RELOAD_UI_POPUP"] = "One or more of the changes you've made require a UI reload."
+L["RIGHT_ENDCAP"] = "Right"
+L["SHADOW"] = "Shadow"
+L["SHIFT_CLICK_TO_SHOW_AS_XP"] = "|cffffffffShift click|r to show as experience bar."
+L["SHORT_HOTKEY"] = "Short Key Bindings"
+L["SUPPORT_FEEDBACK"] = "Support & Feedback"
+L["TEXTURE"] = "Texture"
+L["WYVERN"] = "Wyvern"

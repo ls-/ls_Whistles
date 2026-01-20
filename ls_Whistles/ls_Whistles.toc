@@ -1,0 +1,14 @@
+## Interface: 120000, 120001
+## Author: lightspark
+## Version: 120000.01
+## Title: LS: |cff1ca9c9Whistles|r
+## Notes: Where are the bells tho?
+## IconTexture: Interface\AddOns\ls_Whistles\assets\logo-64
+## SavedVariables: LS_WHISTLES_GLOBAL_CONFIG
+
+embeds\_embeds.xml
+core\_core.xml
+locales\_locales.xml
+modules\_modules.xml
+
+init.lua
