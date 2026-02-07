@@ -1,6 +1,6 @@
 ## Interface: 120000, 120001
 ## Author: lightspark
-## Version: 120000.01
+## Version: 120000.02
 ## Title: LS: |cff1ca9c9Whistles|r
 ## Notes: Where are the bells tho?
 ## IconTexture: Interface\AddOns\ls_Whistles\assets\logo-64
