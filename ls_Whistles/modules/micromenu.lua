@@ -896,11 +896,16 @@ do
 	end
 end
 
+local BAD_SYSTEMS = {
+	MicroButtons = true,
+	TeleportToHouseHelpTips = true,
+}
+
 local function hideHelpTips(self)
 	if C.db.profile.micro_menu.helptips then return end
 
 	for frame in self.framePool:EnumerateActive() do
-		if frame.info and frame.info.system == "MicroButtons" then
+		if frame.info and BAD_SYSTEMS[frame.info.system] then
 			frame:Hide()
 		end
 	end
