@@ -2,7 +2,7 @@
 
 ## Version 120000.02
 
-- Fixed various secret- and combat-related in the Adventure Journal.
+- Fixed various secret- and combat-related issues in the Adventure Guide.
 
 ## Version 120000.01
 
