@@ -53,6 +53,10 @@ end
 local renown_button_proto = {}
 do
 	local function showRenownRewardsTooltip(frame, factionID)
+		if GameTooltip:IsAnchoringSecret() then return end
+		if GameTooltip.ItemTooltip:IsAnchoringSecret() then return end
+		if GameTooltip.ItemTooltip.Tooltip:IsAnchoringSecret() then return end
+
 		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 		RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(showRenownRewardsTooltip, frame, factionID))
 		GameTooltip_AddColoredLine(GameTooltip, _G.JOURNEYS_TOOLTIP_VIEW_JOURNEY, GREEN_FONT_COLOR)
@@ -61,6 +65,10 @@ do
 	end
 
 	local function showParagonRewardsTooltip(frame, factionID)
+		if EmbeddedItemTooltip:IsAnchoringSecret() then return end
+		if EmbeddedItemTooltip.ItemTooltip:IsAnchoringSecret() then return end
+		if EmbeddedItemTooltip.ItemTooltip.Tooltip:IsAnchoringSecret() then return end
+
 		EmbeddedItemTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 		ReputationUtil.AddParagonRewardsToTooltip(EmbeddedItemTooltip, factionID)
 		GameTooltip_SetBottomInstructions(EmbeddedItemTooltip, _G.JOURNEYS_TOOLTIP_VIEW_JOURNEY, L["JOURNEYS_TOOLTIP_WATCH_JOURNEY"])

@@ -173,12 +173,11 @@ function addon.SuggestFrame:Init()
 				button:SetScript("OnLeave", button.OnLeave)
 				button:SetScript("OnHide", button.OnLeave)
 
-				local widget = CreateFrame("Button", nil, button)
-				widget:SetSize(166, 64) -- 80, 80
+				local widget = CreateFrame("Button", nil, button, "LSWishlistMouseMotionPropagator")
+				widget:SetSize(166, 64) -- 178, 80
 				widget:SetPoint("CENTER", 0, 0)
 				widget:EnableMouse(false)
 				widget:EnableMouseMotion(true)
-				widget:SetPropagateMouseMotion(true)
 				button.Widget = widget
 
 				local icon = widget:CreateTexture(nil, "ARTWORK", nil, 1)

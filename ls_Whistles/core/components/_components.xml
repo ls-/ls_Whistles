@@ -2,4 +2,6 @@
 	<Script file="button.lua"/>
 	<Script file="gemdisplay.lua"/>
 	<Script file="fader.lua"/>
+	<!-- templates -->
+	<Frame name="LSWishlistMouseMotionPropagator" propagateMouseInput="Motion" virtual="true" />
 </Ui>
