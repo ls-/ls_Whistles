@@ -6,5 +6,5 @@ local _G = getfenv(0)
 
 -- Mine
 addon.CHANGELOG = [[
-- Release released.
+- Fixed various secret- and combat-related issues in the Adventure Guide.
 ]]
