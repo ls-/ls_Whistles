@@ -6,6 +6,7 @@ addon.LootFrame = {}
 local _G = getfenv(0)
 local m_floor = _G.math.floor
 local m_max = _G.math.max
+local next = _G.next
 local tonumber = _G.tonumber
 
 -- Mine
@@ -344,6 +345,10 @@ function addon.LootFrame:Init()
 			button.IconOverlay2:SetTexelSnappingBias(0)
 			button.IconOverlay2:SetSnapToPixelGrid(false)
 
+			local overlay = CreateFrame("Frame", nil, button) -- used by CIMI/TLH
+			overlay:SetAllPoints()
+			button.Item = overlay
+
 			local questTexture = button:CreateTexture(nil, "OVERLAY")
 			questTexture:SetSize(37, 38)
 			questTexture:SetPoint("TOPLEFT", 0, 0)
@@ -426,6 +431,36 @@ function addon.LootFrame:Init()
 	end)
 
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, view)
+
+	EventUtil.ContinueOnAddOnLoaded("CanIMogIt", function()
+		local function CIMIUpdateIcon(cimiFrame)
+			if not cimiFrame then return end
+			if not CIMI_CheckOverlayIconEnabled() then
+				cimiFrame.CIMIIconTexture:SetShown(false)
+				cimiFrame:SetScript("OnUpdate", nil)
+
+				return
+			end
+
+			local link = GetLootSlotLink(cimiFrame:GetParent():GetParent():GetSlotIndex())
+			if link then
+				CIMI_SetIcon(cimiFrame, CIMIUpdateIcon, CanIMogIt:GetTooltipText(link))
+			end
+		end
+
+		LootFrame:HookScript("OnShow", function()
+			for _, frame in next, LootFrame.ScrollBox.view.frames do
+				if frame.Item then
+					local cimiFrame = frame.Item.CanIMogItOverlay
+					if not cimiFrame then
+						cimiFrame = CIMI_AddToFrame(frame.Item, CIMIUpdateIcon)
+					end
+
+					CIMIUpdateIcon(cimiFrame)
+				end
+			end
+		end)
+	end)
 
 	isInit = true
 end
