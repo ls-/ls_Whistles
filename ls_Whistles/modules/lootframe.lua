@@ -133,6 +133,23 @@ do
 		end
 	end
 
+	function take_button_proto:OnKeyDown(key)
+		if key == "SPACE" or key == GetBindingKey("INTERACTTARGET") then
+			self:SetPropagateKeyboardInput(false)
+			self:OnClick()
+		elseif not InCombatLockdown() then
+			self:SetPropagateKeyboardInput(true)
+		end
+	end
+
+	function take_button_proto:OnEvent(event)
+		if event == "PLAYER_REGEN_DISABLED" then
+			self:SetScript("OnKeyDown", nil)
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			self:SetScript("OnKeyDown", self.OnKeyDown)
+		end
+	end
+
 	function take_button_proto:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(L["LOOT_ALL"], 1, 1, 1)
@@ -366,9 +383,17 @@ function addon.LootFrame:Init()
 		if not button.isInit then
 			Mixin(button, take_button_proto)
 
-			button:SetScript("OnEnter", button.OnEnter)
-			button:SetScript("OnLeave", button.OnLeave)
+			button:EnableKeyboard(true)
+			button:RegisterEvent("PLAYER_REGEN_DISABLED")
+			button:RegisterEvent("PLAYER_REGEN_ENABLED")
 			button:SetScript("OnClick", button.OnClick)
+			button:SetScript("OnEnter", button.OnEnter)
+			button:SetScript("OnEvent", button.OnEvent)
+			button:SetScript("OnLeave", button.OnLeave)
+
+			if not InCombatLockdown() then
+				button:SetScript("OnKeyDown", button.OnKeyDown)
+			end
 
 			local icon = button:CreateTexture(nil, "BORDER")
 			icon:SetAllPoints()
