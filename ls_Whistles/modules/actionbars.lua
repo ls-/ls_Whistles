@@ -1,5 +1,5 @@
 local _, addon = ...
-local C, D, L = addon.C, addon.D, addon.L
+local C, D, L, LEM = addon.C, addon.D, addon.L, addon.LibEditMode
 addon.ActionBars = {}
 
 -- Lua
@@ -8,7 +8,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local next = _G.next
 
 -- Mine
-local LEM = LibStub("LibEditMode-ls", true) or LibStub("LibEditMode")
 local LKB = LibStub("LibKeyBound-1.0")
 
 local BARS = {}

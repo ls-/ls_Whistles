@@ -6,5 +6,8 @@ local _G = getfenv(0)
 
 -- Mine
 addon.CHANGELOG = [[
-- Fixed various secret- and combat-related issues in the Adventure Guide.
+### Loot Window
+
+- Added Transmog Loot Helper and Can I Mog It? support.
+- While not in combat you'll be able to use the interaction hotkey and/or space to loot everything.
 ]]

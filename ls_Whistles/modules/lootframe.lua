@@ -6,6 +6,7 @@ addon.LootFrame = {}
 local _G = getfenv(0)
 local m_floor = _G.math.floor
 local m_max = _G.math.max
+local next = _G.next
 local tonumber = _G.tonumber
 
 -- Mine
@@ -130,6 +131,23 @@ do
 			if GetLootSlotType(i) ~= Enum.LootSlotType.None then
 				LootSlot(i)
 			end
+		end
+	end
+
+	function take_button_proto:OnKeyDown(key)
+		if key == "SPACE" or key == GetBindingKey("INTERACTTARGET") then
+			self:SetPropagateKeyboardInput(false)
+			self:OnClick()
+		elseif not InCombatLockdown() then
+			self:SetPropagateKeyboardInput(true)
+		end
+	end
+
+	function take_button_proto:OnEvent(event)
+		if event == "PLAYER_REGEN_DISABLED" then
+			self:SetScript("OnKeyDown", nil)
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			self:SetScript("OnKeyDown", self.OnKeyDown)
 		end
 	end
 
@@ -327,6 +345,10 @@ function addon.LootFrame:Init()
 			button.IconOverlay2:SetTexelSnappingBias(0)
 			button.IconOverlay2:SetSnapToPixelGrid(false)
 
+			local overlay = CreateFrame("Frame", nil, button) -- used by CIMI/TLH
+			overlay:SetAllPoints()
+			button.Item = overlay
+
 			local questTexture = button:CreateTexture(nil, "OVERLAY")
 			questTexture:SetSize(37, 38)
 			questTexture:SetPoint("TOPLEFT", 0, 0)
@@ -366,9 +388,17 @@ function addon.LootFrame:Init()
 		if not button.isInit then
 			Mixin(button, take_button_proto)
 
-			button:SetScript("OnEnter", button.OnEnter)
-			button:SetScript("OnLeave", button.OnLeave)
+			button:EnableKeyboard(true)
+			button:RegisterEvent("PLAYER_REGEN_DISABLED")
+			button:RegisterEvent("PLAYER_REGEN_ENABLED")
 			button:SetScript("OnClick", button.OnClick)
+			button:SetScript("OnEnter", button.OnEnter)
+			button:SetScript("OnEvent", button.OnEvent)
+			button:SetScript("OnLeave", button.OnLeave)
+
+			if not InCombatLockdown() then
+				button:SetScript("OnKeyDown", button.OnKeyDown)
+			end
 
 			local icon = button:CreateTexture(nil, "BORDER")
 			icon:SetAllPoints()
@@ -401,6 +431,36 @@ function addon.LootFrame:Init()
 	end)
 
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, view)
+
+	EventUtil.ContinueOnAddOnLoaded("CanIMogIt", function()
+		local function CIMIUpdateIcon(cimiFrame)
+			if not cimiFrame then return end
+			if not CIMI_CheckOverlayIconEnabled() then
+				cimiFrame.CIMIIconTexture:SetShown(false)
+				cimiFrame:SetScript("OnUpdate", nil)
+
+				return
+			end
+
+			local link = GetLootSlotLink(cimiFrame:GetParent():GetParent():GetSlotIndex())
+			if link then
+				CIMI_SetIcon(cimiFrame, CIMIUpdateIcon, CanIMogIt:GetTooltipText(link))
+			end
+		end
+
+		LootFrame:HookScript("OnShow", function()
+			for _, frame in next, LootFrame.ScrollBox.view.frames do
+				if frame.Item then
+					local cimiFrame = frame.Item.CanIMogItOverlay
+					if not cimiFrame then
+						cimiFrame = CIMI_AddToFrame(frame.Item, CIMIUpdateIcon)
+					end
+
+					CIMIUpdateIcon(cimiFrame)
+				end
+			end
+		end)
+	end)
 
 	isInit = true
 end
