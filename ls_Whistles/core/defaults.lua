@@ -1,12 +1,10 @@
 local _, addon = ...
-local C, D, L = addon.C, addon.D, addon.L
+local C, D, L, LEM = addon.C, addon.D, addon.L, addon.LibEditMode
 
 -- Lua
 local _G = getfenv(0)
 
 -- Mine
-local LEM = LibStub("LibEditMode-ls", true) or LibStub("LibEditMode")
-
 function addon:GetActionBarLayout()
 	return C.db.profile.actionbars.layouts[LEM:GetActiveLayoutName() or "Modern"]
 end
