@@ -8,6 +8,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local m_floor = _G.math.floor
 local next = _G.next
 local s_upper = _G.string.upper
+local select = _G.select
 
 -- Mine
 local EQUIP_SLOTS = {
@@ -379,9 +380,12 @@ function addon.CharacterFrame:Init()
 
 	hooksecurefunc("PaperDollItemSlotButton_Update", updateSlot)
 
-	addon:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE", function()
-		avgItemLevel = m_floor(GetAverageItemLevel())
-	end)
+	local function updateAverageItemLevel()
+		avgItemLevel = m_floor(select(2, GetAverageItemLevel()))
+	end
+
+	addon:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE", updateAverageItemLevel)
+	addon:RegisterEvent("PLAYER_ENTERING_WORLD", updateAverageItemLevel)
 
 	isInit = true
 end
