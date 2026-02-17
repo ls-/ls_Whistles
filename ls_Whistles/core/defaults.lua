@@ -62,6 +62,10 @@ D.profile = {
 			unusable = false,
 			oom = false,
 		},
+		equipped = {
+			icon = true, -- .Border
+			border = false, -- .NormalTexture
+		},
 		cast_vfx = true,
 		short_hotkey = false,
 		layouts = {
