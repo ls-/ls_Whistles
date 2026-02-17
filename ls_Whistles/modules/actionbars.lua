@@ -246,15 +246,32 @@ local function actionButtonUpdateHotkey(self)
 
 end
 
-local function actionButtonUpdateMacro(self)
-	local name = self.Name
-	if not name then return end
-
+local function actionButtonUpdateHook(self)
 	local barName = BUTTONS[self]
 	if barName then
 		local config = addon:GetActionBarConfigForBar(barName)
 
-		name:SetShown(config.macro)
+		local name = self.Name
+		if name then
+			name:SetShown(config.macro)
+		end
+	end
+
+	local border = self.Border
+	if border then
+		border:Hide()
+		self.NormalTexture:SetVertexColor(1, 1, 1)
+
+		if self.action and C_ActionBar.IsEquippedAction(self.action) then
+			if C.db.profile.actionbars.equipped.icon then
+				border:SetVertexColor(0, 1, 0, 0.5)
+				border:Show()
+			end
+
+			if C.db.profile.actionbars.equipped.border then
+				self.NormalTexture:SetVertexColor(0, 1, 0)
+			end
+		end
 	end
 end
 
@@ -296,7 +313,7 @@ function addon.ActionBars:Init()
 		end
 
 		if button.Name and button.Update then
-			hooksecurefunc(button, "Update", actionButtonUpdateMacro)
+			hooksecurefunc(button, "Update", actionButtonUpdateHook)
 		end
 	end
 
@@ -877,9 +894,11 @@ function addon.ActionBars:UpdateMacro(name)
 	if not BARS[name] then return end
 
 	for _, button in next, BARS[name] do
-		actionButtonUpdateMacro(button)
+		actionButtonUpdateHook(button)
 	end
 end
+
+addon.ActionBars.UpdateEquippedHighlight = addon.ActionBars.UpdateMacro
 
 function addon.ActionBars:UpdateArt(name)
 	if not BARS[name] then return end
@@ -899,8 +918,3 @@ function addon.ActionBars:ForAll(method)
 		self[method](self, name)
 	end
 end
-
---[[
-/dump MultiBarRightButton10.commandName
-/dump GetBindingKey(MultiBarRightButton10.commandName)
-]]

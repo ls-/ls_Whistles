@@ -517,6 +517,38 @@ do
 							},
 						},
 						spacer_3 = createSpacer(inc(2)),
+						equipped = {
+							order = inc(2),
+							type = "group",
+							name = L["EQUIPPED_HIGHLIGHT"],
+							inline = true,
+							disabled =  function()
+								return not addon.ActionBars:IsInit()
+							end,
+							get = function(info)
+								return C.db.profile.actionbars.equipped[info[#info]]
+							end,
+							set = function(info, value)
+								C.db.profile.actionbars.equipped[info[#info]] = value
+
+								addon.ActionBars:ForAll("UpdateEquippedHighlight")
+							end,
+							args = {
+								icon = {
+									order = reset(3),
+									type = "toggle",
+									name = _G.SELF_HIGHLIGHT_ICON,
+									width = 1.25,
+								},
+								border = {
+									order = inc(3),
+									type = "toggle",
+									name = L["BORDER"],
+									width = 1.25,
+								},
+							},
+						},
+						spacer_4 = createSpacer(inc(2)),
 						footer = {
 							order = inc(2),
 							type = "description",

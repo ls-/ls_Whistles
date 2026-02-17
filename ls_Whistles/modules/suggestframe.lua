@@ -117,6 +117,8 @@ function addon.SuggestFrame:Init()
 
 	EventUtil.ContinueOnAddOnLoaded("Blizzard_EncounterJournal", function()
 		EncounterJournalSuggestFrame:UnregisterEvent("AJ_REFRESH_DISPLAY")
+		EncounterJournalSuggestFrame:UnregisterEvent("AJ_REWARD_DATA_RECEIVED")
+		EncounterJournalSuggestFrame:SetScript("OnShow", nil)
 		EncounterJournalSuggestFrame:EnableMouseWheel(false)
 		EncounterJournalSuggestFrame.Suggestion1:Hide()
 		EncounterJournalSuggestFrame.Suggestion2:Hide()
@@ -135,9 +137,6 @@ function addon.SuggestFrame:Init()
 				end
 			end
 		end, addon.SuggestFrame)
-
-		-- this might cause issues
-		EJSuggestFrame_RefreshDisplay = nop
 
 		local scrollBox = Mixin(CreateFrame("Frame", nil, EncounterJournalSuggestFrame, "WowScrollBoxList"), list_proto)
 		scrollBox:SetPoint("TOPLEFT", 9, -5)
@@ -268,12 +267,12 @@ function addon.SuggestFrame:Init()
 
 		local timer = nil
 		local function delayedUpdate()
+			C_AdventureJournal.UpdateSuggestions()
 			scrollBox:Refresh()
 
 			timer = nil
 		end
 
-		-- C_AdventureJournal.UpdateSuggestions are called from inside EJSuggestFrame_OnShow
 		addon:RegisterEvent("AJ_REFRESH_DISPLAY", function()
 			if not timer then
 				timer = C_Timer.NewTimer(0.25, delayedUpdate)
