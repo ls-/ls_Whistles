@@ -918,8 +918,3 @@ function addon.ActionBars:ForAll(method)
 		self[method](self, name)
 	end
 end
-
---[[
-/dump MultiBarRightButton10.commandName
-/dump GetBindingKey(MultiBarRightButton10.commandName)
-]]
