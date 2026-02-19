@@ -303,6 +303,9 @@ function addon.JourneyFrame:Init()
 				button.JourneyCardProgressBar.JourneyCardProgressBarBG:SetAllPoints()
 				button.JourneyCardProgressBar.JourneyCardProgressBarBG:SetTexelSnappingBias(0)
 				button.JourneyCardProgressBar.JourneyCardProgressBarBG:SetSnapToPixelGrid(false)
+				button.JourneyCardProgressBar.JourneyCardProgressBarFrame:SetAllPoints()
+				button.JourneyCardProgressBar.JourneyCardProgressBarFrame:SetTexelSnappingBias(0)
+				button.JourneyCardProgressBar.JourneyCardProgressBarFrame:SetSnapToPixelGrid(false)
 
 				button.LockFrame:SetPoint("TOPRIGHT", -10, -10)
 
