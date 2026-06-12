@@ -177,11 +177,17 @@ local function actionButtonUpdateUnusable(self, _, isUsable, notEnoughMana)
 		if C.db.profile.actionbars.desaturation.oom then
 			self.icon:SetDesaturated(true)
 			self.icon:SetVertexColor(0.3, 0.5, 1)
+		else
+			self.icon:SetDesaturated(false)
+			self.icon:SetVertexColor(0.5, 0.5, 1)
 		end
 	else
 		if C.db.profile.actionbars.desaturation.unusable then
 			self.icon:SetDesaturated(true)
 			self.icon:SetVertexColor(1, 1, 1)
+		else
+			self.icon:SetDesaturated(false)
+			self.icon:SetVertexColor(0.4, 0.4, 0.4)
 		end
 	end
 end
