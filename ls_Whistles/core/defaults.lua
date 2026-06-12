@@ -14,7 +14,7 @@ function addon:GetActionBarConfigForBar(name)
 end
 
 function addon:GetDefaultActionBarLayout()
-	return C.db.profile.actionbars.layouts["*"]
+	return D.profile.actionbars.layouts["*"]
 end
 
 function addon:GetMicroMenuLayout()
