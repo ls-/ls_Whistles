@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## Version 120007.01
+
+- Added 12.0.7 support.
+
+### Adventure Guide
+
+- Fixed an issue where the expansion dropdown would sometimes disappear. It's a Blizz bug.
+
+### Tooltips
+
+- Fixed an issue where the module would fail to enable without a reload.
+
 ## Version 120005.03
 
 ### Tooltips
