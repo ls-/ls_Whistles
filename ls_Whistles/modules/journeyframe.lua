@@ -339,7 +339,7 @@ function addon.JourneyFrame:Init()
 				button.JourneyCardProgressBar:SetMinMaxValues(0, paragonInfo.maxValue)
 				button.JourneyCardProgressBar:SetValue(paragonInfo.curValue)
 			else
-				button.JourneyCardLevel:SetText(_G.JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel))
+				button.JourneyCardLevel:SetText(_G.JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel, elementData.maxLevel))
 
 				button.JourneyCardProgressBar:SetMinMaxValues(0, elementData.maxValue)
 				button.JourneyCardProgressBar:SetValue(elementData.curValue)
@@ -442,11 +442,23 @@ function addon.JourneyFrame:Init()
 			if not C_MajorFactions.ShouldUseJourneyRewardTrack(data.factionID) then
 				self.DelveRewardProgressBar:Hide()
 			else
-				self.DelveRewardProgressBar:SetMinMaxValues(0, max)
-				self.DelveRewardProgressBar:SetValue(cur)
+				self.DelveRewardProgressBar:SetMinMaxValues(0, max * (data.maxLevel - 1))
+				self.DelveRewardProgressBar:SetValue((level - 1) * max + cur)
 				self.DelveRewardProgressBar:Show()
+
+				local maskTexture = self.track.ClipFrame.Mask
+				if maskTexture then
+					self.DelveRewardProgressBar.DelveRewardProgressBarBG:AddMaskTexture(maskTexture)
+					self.DelveRewardProgressBar.DelveRewardProgressBarFrame:AddMaskTexture(maskTexture)
+					self.DelveRewardProgressBar:GetStatusBarTexture():AddMaskTexture(maskTexture)
+				end
 			end
 		end
+
+		EncounterJournalJourneysFrame:HookScript("OnShow", function()
+			-- BUG: When you switch back to the journey tab, the dropdown will stay hidden if it's hidden before
+			EncounterJournal.instanceSelect.ExpansionDropdown:Show()
+		end)
 
 		Mixin(EncounterJournalJourneysFrame.JourneyOverview.OverviewProgressBar, progress_bar_proto)
 		EncounterJournalJourneysFrame.JourneyOverview.OverviewProgressBar:SetSwipeTexture(SWIPE_TEXTURE)

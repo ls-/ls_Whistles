@@ -996,7 +996,7 @@ do
 							set = function(_, value)
 								C.db.profile.tooltips.enabled = value
 
-								if addon.GameMenu:IsInit() then
+								if addon.Tooltips:IsInit() then
 									askToReloadUI("tooltips.enabled", value)
 								else
 									if value then

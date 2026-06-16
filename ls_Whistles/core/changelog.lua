@@ -6,13 +6,13 @@ local _G = getfenv(0)
 
 -- Mine
 addon.CHANGELOG = [[
-- Added profile import/export. Available at the "Profiles" tabs in Blizz config panel.
+- Added 12.0.7 support.
 
-### Character & Inspect Frames
+### Adventure Guide
 
-- The "Upgrade Level" option now also handles crafted items' quality.
+- Fixed an issue where the expansion dropdown would sometimes disappear. It's a Blizz bug.
 
 ### Tooltips
 
-- Added the submodule. For now it's just item/spell ID and item count info.
+- Fixed an issue where the module would fail to enable without a reload.
 ]]
