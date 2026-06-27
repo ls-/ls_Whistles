@@ -431,8 +431,9 @@ function addon.JourneyFrame:Init()
 				max = paragonInfo.maxValue
 				level = paragonInfo.totalLevel
 			else
-				cur = data.curValue
-				max = data.maxValue
+				-- sometimes processData get side-stepped
+				cur = data.curValue or data.renownReputationEarned
+				max = data.maxValue or data.renownLevelThreshold
 				level = data.renownLevel
 			end
 
