@@ -156,6 +156,8 @@ local function processData(data)
 		end
 	end
 
+	data.isProcessedData = true
+
 	return data
 end
 
@@ -271,9 +273,12 @@ function addon.JourneyFrame:Init()
 				button.isInit = true
 			end
 
+			-- the data might be coming from the initial blizz update, ignore it
+			if not elementData.isProcessedData then return end
+
 			button.majorFactionData = elementData
 
-			local isLocked = not button.majorFactionData.isUnlocked
+			local isLocked = not elementData.isUnlocked
 			button:DesaturateHierarchy(isLocked and 1 or 0)
 
 			local paragonInfo = elementData.paragonInfo or elementData.essentialParagonInfo
@@ -317,6 +322,9 @@ function addon.JourneyFrame:Init()
 				button.journeysFrame = EncounterJournalJourneysFrame
 				button.isInit = true
 			end
+
+			-- the data might be coming from the initial blizz update, ignore it
+			if not elementData.isProcessedData then return end
 
 			button.majorFactionData = elementData
 
@@ -424,6 +432,9 @@ function addon.JourneyFrame:Init()
 		function EncounterJournalJourneysFrame.JourneyProgress:SetupProgressDetails()
 			local data = self.majorFactionData
 
+			-- the data might be coming from the initial blizz update, ignore it
+			if not data.isProcessedData then return end
+
 			local paragonInfo = data.paragonInfo or data.essentialParagonInfo
 			local cur, max, level
 			if paragonInfo then
@@ -431,9 +442,8 @@ function addon.JourneyFrame:Init()
 				max = paragonInfo.maxValue
 				level = paragonInfo.totalLevel
 			else
-				-- sometimes processData get side-stepped
-				cur = data.curValue or data.renownReputationEarned
-				max = data.maxValue or data.renownLevelThreshold
+				cur = data.curValue
+				max = data.maxValue
 				level = data.renownLevel
 			end
 
