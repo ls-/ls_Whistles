@@ -429,6 +429,20 @@ function addon.JourneyFrame:Init()
 			self.JourneysList:SetDataProvider(dataProvider)
 		end
 
+		hooksecurefunc(EncounterJournalJourneysFrame.JourneyProgress, "Refresh", function(self, fromOnShow)
+			local data = self.majorFactionData
+			if not data then return end
+
+			-- in this particular case it might be coming from the "Delver's Guide" book
+			if fromOnShow and not data.isProcessedData then
+				self.majorFactionData = processData(C_MajorFactions.GetMajorFactionData(data.factionID))
+
+				if C_MajorFactions.ShouldDisplayMajorFactionAsJourney(data.factionID) then
+					self:SetupProgressDetails()
+				end
+			end
+		end)
+
 		function EncounterJournalJourneysFrame.JourneyProgress:SetupProgressDetails()
 			local data = self.majorFactionData
 
