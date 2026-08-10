@@ -91,45 +91,6 @@ function addon.Tooltips:Init()
 		end
 	end)
 
-	local auraGetterToAPI = {
-		["GetUnitAura"] = function(...)
-			local data = C_UnitAuras.GetAuraDataByIndex(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-		["GetUnitAuraByAuraInstanceID"] = function(...)
-			local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-		["GetUnitBuff"] = function(...)
-			local data = C_UnitAuras.GetBuffDataByIndex(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-		["GetUnitBuffByAuraInstanceID"] = function(...)
-			local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-		["GetUnitDebuff"] = function(...)
-			local data = C_UnitAuras.GetDebuffDataByIndex(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-		["GetUnitDebuffByAuraInstanceID"] = function(...)
-			local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))
-			if data then
-				return data.sourceUnit
-			end
-		end,
-	}
-
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.UnitAura, function(tooltip, data)
 		if not GOOD_TOOLTIPS[tooltip] or tooltip:IsForbidden() then return end
 		if not C.db.profile.tooltips.id then return end
@@ -137,22 +98,7 @@ function addon.Tooltips:Init()
 		local id = data.id
 		if id then
 			tooltip:AddLine(" ")
-
-			local caster
-			local processor = auraGetterToAPI[tooltip.processingInfo.getterName]
-			if processor then
-				caster = processor(tooltip.processingInfo.getterArgs)
-			-- else
-			-- 	print("UnitAura: |cffffd200", tooltip.processingInfo.getterName, "|r")
-			-- 	print("getterArgs:")
-			-- 	DevTools_Dump({tooltip.processingInfo.getterArgs})
-			end
-
-			if caster ~= nil then
-				tooltip:AddDoubleLine(ID:format(id), UnitName(caster), 1, 1, 1, 1, 1, 1)
-			else
-				tooltip:AddLine(ID:format(id), 1, 1, 1)
-			end
+			tooltip:AddLine(ID:format(id), 1, 1, 1)
 		end
 	end)
 
