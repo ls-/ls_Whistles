@@ -4,6 +4,7 @@ addon.JourneyFrame = {}
 
 -- Lua
 local _G = getfenv(0)
+local hooksecurefunc = _G.hooksecurefunc
 local ipairs = _G.ipairs
 local m_rad = _G.math.rad
 local select = _G.select
