@@ -6,13 +6,10 @@ local _G = getfenv(0)
 
 -- Mine
 addon.CHANGELOG = [[
-- Added 12.0.7 support.
-
-### Adventure Guide
-
-- Fixed an issue where the expansion dropdown would sometimes disappear. It's a Blizz bug.
+- Added 12.1.0 support.
 
 ### Tooltips
 
-- Fixed an issue where the module would fail to enable without a reload.
+- Removed caster names from aura tooltips. This info is no longer available to addons when it
+  actually matters.
 ]]
