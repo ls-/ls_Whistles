@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## Version 120100.01
+
+- Added 12.1.0 support.
+
+### Tooltips
+
+- Removed caster names from aura tooltips. This info is no longer available to addons when it
+  actually matters.
+
 ## Version 120007.01
 
 - Added 12.0.7 support.
