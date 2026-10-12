@@ -9,11 +9,11 @@ local _G = getfenv(0)
 local backpack_proto = {}
 do
 	local CURRENCY_COLON = _G.CURRENCY .. _G.HEADER_COLON
-	local CURRENCY_DETAILED_TEMPLATE = "%s / %s|T%s:0:0:0:0:64:64:4:60:4:60|t"
-	local CURRENCY_TEMPLATE = "%s |T%s:0:0:0:0:64:64:4:60:4:60|t"
+	local CURRENCY_TEMPLATE = "%s%s |T%s:0:0:0:0:64:64:4:60:4:60|t"
 	local GOLD = _G.BONUS_ROLL_REWARD_MONEY
 	local _, TOKEN_NAME = C_Item.GetItemInfoInstant(WOW_TOKEN_ITEM_ID)
 	local TOKEN_COLOR = ITEM_QUALITY_COLORS[8]
+	local TIMEOUT_ICON = ("|A:UI-Frame-DastardlyDuos-icon-Speed:0:0:0:0:%d:%d:%d|a "):format(D.global.colors.yellow:GetRGBAsBytes())
 
 	local lastTokenUpdate = 0
 
@@ -28,30 +28,26 @@ do
 			if info then
 				info = C_CurrencyInfo.GetCurrencyInfo(info.currencyTypesID)
 				if info then
-					if info.maxQuantity and info.maxQuantity > 0 then
-						if info.quantity == info.maxQuantity then
-							GameTooltip:AddDoubleLine(
-								ITEM_QUALITY_COLORS[info.quality].color:WrapTextInColorCode(info.name),
-								CURRENCY_DETAILED_TEMPLATE:format(BreakUpLargeNumbers(info.quantity), BreakUpLargeNumbers(info.maxQuantity), info.iconFileID),
-								1, 1, 1,
-								D.global.colors.red:GetRGB()
-							)
+					local color = _G.WHITE_FONT_COLOR
+					local texture = ""
+					local hasTotalCap, hasWeeklyCap = info.maxQuantity > 0, info.maxWeeklyQuantity > 0
+					if hasTotalCap or hasWeeklyCap then
+						local isTotalCapped = hasTotalCap and (info.useTotalEarnedForMaxQty and info.totalEarned or info.quantity) == info.maxQuantity or false
+						local isWeeklyCapped = hasWeeklyCap and info.quanityEarnedThisWeek == info.maxWeeklyQuantity or false
+						if isTotalCapped or isWeeklyCapped then
+							color = D.global.colors.red
+							texture = TIMEOUT_ICON
 						else
-							GameTooltip:AddDoubleLine(
-								ITEM_QUALITY_COLORS[info.quality].color:WrapTextInColorCode(info.name),
-								CURRENCY_DETAILED_TEMPLATE:format(BreakUpLargeNumbers(info.quantity), BreakUpLargeNumbers(info.maxQuantity), info.iconFileID),
-								1, 1, 1,
-								D.global.colors.green:GetRGB()
-							)
+							color = D.global.colors.green
 						end
-					else
-						GameTooltip:AddDoubleLine(
-							ITEM_QUALITY_COLORS[info.quality].color:WrapTextInColorCode(info.name),
-							CURRENCY_TEMPLATE:format(BreakUpLargeNumbers(info.quantity), info.iconFileID),
-							1, 1, 1,
-							1, 1, 1
-						)
 					end
+
+					GameTooltip:AddDoubleLine(
+						ITEM_QUALITY_COLORS[info.quality].color:WrapTextInColorCode(info.name),
+						CURRENCY_TEMPLATE:format(texture, BreakUpLargeNumbers(info.quantity), info.iconFileID),
+						1, 1, 1,
+						color:GetRGB()
+					)
 				end
 			end
 		end
