@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## Version 120105.01
+
+- Added 12.1.5 support.
+
+### Backpack
+
+- Reworked the tooltip. Removed the cap info because most currencies have multiple caps like weekly, seasonal, and
+  total. Instead the addon will indicate if you maxed out a currency via colour and an icon.
+
+### Widgets
+
+- Added the module. For now it just adds a mover for the zone status indicator in Edit Mode. It's the widget that shows
+  invasion, incursion, etc timers and info.
+
 ## Version 120100.01
 
 - Added 12.1.0 support.

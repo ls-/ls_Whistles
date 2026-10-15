@@ -6,10 +6,13 @@ local _G = getfenv(0)
 
 -- Mine
 addon.CHANGELOG = [[
-- Added 12.1.0 support.
+- Added 12.1.5 support.
 
-### Tooltips
+### Backpack
 
-- Removed caster names from aura tooltips. This info is no longer available to addons when it
-  actually matters.
+- Reworked the tooltip. Removed the cap info because most currencies have multiple caps like weekly, seasonal, and total. Instead the addon will indicate if you maxed out a currency via colour and an icon.
+
+### Widgets
+
+- Added the module. For now it just adds a mover for the zone status indicator in Edit Mode. It's the widget that shows invasion, incursion, etc timers and info.
 ]]
