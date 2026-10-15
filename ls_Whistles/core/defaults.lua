@@ -25,6 +25,10 @@ function addon:GetBackpackLayout()
 	return C.db.profile.backpack.layouts[LEM:GetActiveLayoutName() or "Modern"]
 end
 
+function addon:GetWidgetContainersLayout()
+	return C.db.profile.widget_containers.layouts[LEM:GetActiveLayoutName() or "Modern"]
+end
+
 local function rgb(...)
 	return addon:CreateColor(...)
 end
@@ -208,5 +212,15 @@ D.profile = {
 		enabled = false,
 		count = false,
 		id = false,
+	},
+	widget_containers = {
+		enabled = true,
+		layouts = {
+			["*"] = { -- layout
+				["UIWidgetTopCenterContainerFrame"] = {
+					point = {point = "TOP", x = 0, y = -15},
+				},
+			},
+		},
 	},
 }

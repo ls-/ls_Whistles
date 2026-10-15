@@ -10,4 +10,5 @@
 	<Script file="micromenu.lua"/>
 	<Script file="suggestframe.lua"/>
 	<Script file="tooltips.lua"/>
+	<Script file="widgetcontainers.lua"/>
 </Ui>

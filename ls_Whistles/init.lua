@@ -17,6 +17,7 @@ local function updateCallback()
 	addon.ActionBars:UpdateLayoutSettings()
 	addon.Backpack:UpdateLayoutSettings()
 	addon.MicroMenu:UpdateLayoutSettings()
+	addon.WidgetContainers:UpdateLayoutSettings()
 
 	addon:AskToReloadUI("profile")
 end
@@ -54,6 +55,7 @@ addon:RegisterEvent("ADDON_LOADED", function(arg1)
 	addon.MicroMenu:Init()
 	addon.SuggestFrame:Init()
 	addon.Tooltips:Init()
+	addon.WidgetContainers:Init()
 
 	addon:CreateImportExport()
 	addon:CreateBlizzConfig()
