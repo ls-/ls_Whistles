@@ -437,6 +437,26 @@ do
 						end
 					end,
 				},
+				widget_containers = {
+					order = inc(1),
+					type = "toggle",
+					name = colorSettingThatReloads(L["WIDGETS"]),
+					desc = L["WIDGETS_DESC"],
+					get = function()
+						return C.db.profile.widget_containers.enabled
+					end,
+					set = function(_, value)
+						C.db.profile.widget_containers.enabled = value
+
+						if addon.Backpack:IsInit() then
+							askToReloadUI("widget_containers.enabled", value)
+						else
+							if value then
+								addon.Backpack:Init()
+							end
+						end
+					end,
+				},
 				actionbars = {
 					order = inc(1),
 					type = "group",
